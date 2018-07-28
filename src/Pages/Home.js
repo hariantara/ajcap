@@ -2,6 +2,8 @@ import React, {Component} from 'react'
 
 import Navbar from  '../Components/Navbar'
 import Footer from '../Components/Footer'
+import Card from '../Components/Card'
+import Category from '../Components/Category'
 
 import { connect } from 'react-redux'
 import {getDataInsuranceAPI} from '../Redux/Action'
@@ -12,7 +14,8 @@ class Home extends Component {
     constructor(props){
         super(props)
         this.state = {
-            listDataInsurane: []
+            listDataInsurane: [],
+            searchBar: ''
         }
     }
 
@@ -27,9 +30,22 @@ class Home extends Component {
         }
     }
 
+    getDataForFilterSearch = (e) => {
+        console.log('getDataForFilterSearch: ', e)
+        this.setState({searchBar: e})
+    }
     render(){
         console.log('props: ', this.props)
-        console.log('state: ', this.state.listDataInsurane)
+        console.log('state: ', this.state.searchBar) 
+        let filter 
+        if(this.state.listDataInsurane.length !== 0){
+            filter = this.state.listDataInsurane.filter(
+                (data) => {
+                console.log('home bro: ', data)
+                  return data.plan.insuranceProviderName.toLowerCase().indexOf(this.state.searchBar.toLowerCase()) !== -1 
+                }
+            )
+        }
         return(
             <div>
                 <div className='Header row'>
@@ -38,32 +54,11 @@ class Home extends Component {
                 <div className='Content row'>
                     <div className='container'>
                         <div className='row'>
-                            <div>
-                                <p>Some text some text some text some text..</p>
-                                <p>Some text some text some text some text..</p>
-                                <p>Some text some text some text some text..</p>
-                                <p>Some text some text some text some text..</p>
-                                <p>Some text some text some text some text..</p>
-                                <p>Some text some text some text some text..</p>
-                                <p>Some text some text some text some text..</p>
-                                <p>Some text some text some text some text..</p>
-                                <p>Some text some text some text some text..</p>
-                                <p>Some text some text some text some text..</p>
-                                <p>Some text some text some text some text..</p>
-                                <p>Some text some text some text some text..</p>
-                                <p>Some text some text some text some text..</p>
-                                <p>Some text some text some text some text..</p>
-                                <p>Some text some text some text some text..</p>
-                                <p>Some text some text some text some text..</p>
-                                <p>Some text some text some text some text..</p>
-                                <p>Some text some text some text some text..</p>
-                                <p>Some text some text some text some text..</p>
-                                <p>Some text some text some text some text..</p>
-                                <p>Some text some text some text some text..</p>
-                                <p>Some text some text some text some text..</p>
-                                <p>Some text some text some text some text..</p>
-                                <p>Some text some text some text some text..</p>
-                                <p>Some text some text some text some text..</p>
+                            <div className='col-md-3'>
+                                <Category filter={this.getDataForFilterSearch}/>
+                            </div>
+                            <div className='col-md-9'>
+                                <Card data={filter}/>
                             </div>
                         </div>
                     </div>

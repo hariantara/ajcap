@@ -1,0 +1,19 @@
+.card-body {
+    height: 170px
+}
+
+.img-mrgn-top {
+    margin-top: -50px;
+}
+
+.card-font{
+    font-size: 0.7rem !important;
+}
+
+.card-box {
+    cursor: pointer;
+}
+
+.card-box:hover {
+    transform: scale(1.1);
+} 

@@ -14,7 +14,6 @@ export const Error = (err) => ({
     }
 })
 
-
 export const getDataInsuranceAPI = () => {
     return async (dispatch, getState) => {
         try{

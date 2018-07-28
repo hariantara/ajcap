@@ -1,5 +1,7 @@
 import React, {Component} from 'react'
 
+import astronaut from '../Static/img/tronaut.png'
+
 import '../Styles/navbar.css'
 
 class Navbar extends Component {
@@ -18,14 +20,17 @@ class Navbar extends Component {
                             <div className='container'>
                                 <div className='row'>
                                     <ul className="navbar-nav mr-auto">
-                                    <li className="nav-item active">
-                                        <a className="navbar-brand nav-link">Home <span className="sr-only">(current)</span></a>
-                                    </li>
+                                        <li className="nav-item ">
+                                            <div className='container-fluid logos' style={{cursor: 'pointer'}}>
+                                                <div className='row'>
+                                                    <div className='col-md-4'>
+                                                        <img style={{width: '70px', height: '70px', }} src={astronaut} alt='logo'/>
+                                                    </div>
+                                                    <div className='col-md-4'><h4>H O M E</h4></div>
+                                                </div>
+                                            </div>
+                                        </li>
                                     </ul>
-                                    <form className="form-inline my-2 my-lg-0">
-                                        <input className="form-control mr-sm-2" type="text" placeholder="Search"/>
-                                        <button className="btn btn-secondary my-2 my-sm-0" type="submit">Search</button>
-                                    </form>
                                 </div>
                             </div>
                         </div>
