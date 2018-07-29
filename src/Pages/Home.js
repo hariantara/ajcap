@@ -61,6 +61,8 @@ class Home extends Component {
             await this.props.fetchInsuranceSortDate()
             await this.setState({
                 sortStatus: e,
+                sortAmountStatus: false,
+                sortAmountData: [],
                 sortData: this.props.sortDate   
             })
         }
@@ -72,6 +74,8 @@ class Home extends Component {
             await this.props.fetchInsuranceSortAmount()
             await this.setState({
                 sortAmountStatus: e,
+                sortStatus: false,
+                sortData: [],
                 sortAmountData: this.props.sortAmount
             })
         }
@@ -84,7 +88,7 @@ class Home extends Component {
         if(this.state.search !== ''){
             searchFilter = this.state.listDataInsurane.filter(
                 (data) => {
-                  return data.plan.insuranceProviderName.toLowerCase().indexOf(this.state.search) !== -1
+                  return data.plan.insuranceProviderName.toLowerCase().indexOf(this.state.search.toLowerCase()) !== -1   
                 }
             )
             oldData = searchFilter
