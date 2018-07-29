@@ -4,9 +4,14 @@ import Navbar from  '../Components/Navbar'
 import Footer from '../Components/Footer'
 import Card from '../Components/Card'
 import Category from '../Components/Category'
+import Detail from '../Components/Detail'
 
 import { connect } from 'react-redux'
-import {getDataInsuranceAPI} from '../Redux/Action'
+import {
+    getDataInsuranceAPI, 
+    getSortInsuranceDataDateAPI,
+    getDataInsuranceDataAmountAPI
+} from '../Redux/Action'
 
 import '../Styles/content.css'
 
@@ -15,12 +20,21 @@ class Home extends Component {
         super(props)
         this.state = {
             listDataInsurane: [],
-            searchBar: ''
+            searchBar: '',
+            getDetailById: '',
+            getDetailByIdStatus: false,
+            search: '',
+            searchData: [],
+            sortStatus: false,
+            sortData: [],
+            sortAmountStatus: false,
+            sortAmountData: []
         }
     }
 
     componentDidMount(){
         this.props.fetchInsuranceData()
+        this.setState({listDataInsurane: this.props.insuranceDatas})
     }
 
     componentWillReceiveProps(nextProps){
@@ -29,23 +43,62 @@ class Home extends Component {
             this.setState({listDataInsurane: nextProps.insuranceDatas})
         }
     }
+    getDetailById = async(e) => {
+        console.log('masuk getDetailById ===> Home', e)
+        await this.setState({getDetailById: e, getDetailByIdStatus: true})
+    }
+    getBackDetail = () => {
+        this.setState({
+            getDetailByIdStatus: false
+        })
+    }
+    search = (e) => {
+        this.setState({search: e})
+    }
+    sort = async (e) => {
+        console.log('SORT: ',e)
+        if(e === true){
+            await this.props.fetchInsuranceSortDate()
+            await this.setState({
+                sortStatus: e,
+                sortData: this.props.sortDate   
+            })
+        }
+    }
 
-    getDataForFilterSearch = (e) => {
-        console.log('getDataForFilterSearch: ', e)
-        this.setState({searchBar: e})
+    sortByTotalAmount = async(e) => {
+        console.log(e)
+        if(e === true) {
+            await this.props.fetchInsuranceSortAmount()
+            await this.setState({
+                sortAmountStatus: e,
+                sortAmountData: this.props.sortAmount
+            })
+        }
     }
     render(){
         console.log('props: ', this.props)
-        console.log('state: ', this.state.searchBar) 
-        let filter 
-        if(this.state.listDataInsurane.length !== 0){
-            filter = this.state.listDataInsurane.filter(
+        console.log('state HOME: ', this.state) 
+        let oldData
+        let searchFilter
+        if(this.state.search !== ''){
+            searchFilter = this.state.listDataInsurane.filter(
                 (data) => {
-                console.log('home bro: ', data)
-                  return data.plan.insuranceProviderName.toLowerCase().indexOf(this.state.searchBar.toLowerCase()) !== -1 
+                  return data.plan.insuranceProviderName.toLowerCase().indexOf(this.state.search) !== -1
                 }
             )
+            oldData = searchFilter
         }
+        else if(this.state.sortStatus) {
+            oldData = this.state.sortData
+        }
+        else if(this.state.sortAmountStatus){
+            oldData = this.state.sortAmountData
+        }
+        else {
+            oldData = this.state.listDataInsurane
+        }
+        console.log('searchFilter: ', searchFilter)
         return(
             <div>
                 <div className='Header row'>
@@ -55,10 +108,31 @@ class Home extends Component {
                     <div className='container'>
                         <div className='row'>
                             <div className='col-md-3'>
-                                <Category filter={this.getDataForFilterSearch}/>
+                                <Category 
+                                    search={this.search}
+                                    sort={this.sort}
+                                    sortByTotalAmount={this.sortByTotalAmount}
+                                />
                             </div>
                             <div className='col-md-9'>
-                                <Card data={filter}/>
+                                {
+                                    this.state.getDetailByIdStatus ?
+                                    <div>
+                                        <div className='row'>
+                                            <Detail
+                                                dataDetail={this.state.getDetailById}
+                                            />
+                                        </div>
+                                        <div className='row'>
+                                            <button type="button" className="btn btn-danger" onClick={this.getBackDetail}>Back</button>
+                                        </div>
+                                    </div>
+                                    :
+                                    <Card 
+                                        data={oldData}
+                                        getDetailById={this.getDetailById}
+                                    />
+                                }
                             </div>
                         </div>
                     </div>
@@ -78,7 +152,9 @@ const mapStateToProps = (state) => {
     return {
         insuranceDatas: state.insurances.datas,
         clientError: state.insurances.error_status,
-        serverError: state.insurances.error_status
+        serverError: state.insurances.error_status,
+        sortDate: state.insurances.sortDateData,
+        sortAmount: state.insurances.sortAmountData
     }
 }
 
@@ -86,6 +162,8 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = (dispatch) => {
     return {
         fetchInsuranceData: () => dispatch(getDataInsuranceAPI()),
+        fetchInsuranceSortDate: () => dispatch(getSortInsuranceDataDateAPI()),
+        fetchInsuranceSortAmount: () => dispatch(getDataInsuranceDataAmountAPI())
     }
 }
 
