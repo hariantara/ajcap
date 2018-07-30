@@ -1,5 +1,6 @@
 import axios from  'axios'
 import moment from 'moment'
+import _ from 'lodash'
 
 export const getDataInsurance = (datas) => ({
     type: 'GET_LIST_DATA',
@@ -33,6 +34,27 @@ export const getDataInsuranceDataAmount = (sort_amount) => ({
     type: 'GET_SORT_AMOUNT',
     payload: {
         sort_amount
+    }
+})
+
+export const itemsCheckBox = (data) => ({
+    type: 'CHECKBOX',
+    payload: {
+        data
+    }
+})
+
+export const comparisonData = (dataArray) => ({
+    type: 'COMPARE',
+    payload: {
+        datas: dataArray
+    }
+})
+
+export const resetCheckBoxDatas = () => ({
+    type: 'RESET_CHECKBOX_DATA',
+    payload: {
+        data: []
     }
 })
 
@@ -118,6 +140,48 @@ export const getDataInsuranceDataAmountAPI = () => {
             }else {
                 dispatch(Error(err.response.status)) // bad request
             }
+        }
+    }
+}
+
+export const itemsCheckBoxAPI = (data) => {
+    return async (dispatch, getState) => {
+        try{
+            dispatch(itemsCheckBox(data))
+        }catch(err){
+            console.log(err)
+        }
+    }
+}
+
+export const comparisonDataAPI = (data) => {
+    return async (dispatch, getState) => {
+        try{
+            let fetch = await axios.get(`http://localhost:3000/content`)
+            let dataArray = []
+            let newSelectedData = await data.map(datum => {
+                return _.filter(fetch.data, (res)=>{
+                    return res.plan.id === datum
+                })
+            })
+            
+            await newSelectedData.map(data => {
+                dataArray.push(data[0])
+            })
+            console.log('dataArray: ', dataArray)
+            if(dataArray.length > 0)dispatch(comparisonData(dataArray))
+        }catch(err){
+            console.log(err)
+        }
+    }
+}
+
+export const resetCheckBoxDatasAPI = () => {
+    return async (dispatch, getState) => {
+        try{
+            dispatch(resetCheckBoxDatas())
+        }catch(err){
+            console.log(err)
         }
     }
 }

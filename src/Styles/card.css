@@ -17,3 +17,8 @@
 .card-box:hover {
     transform: scale(1.1);
 } 
+
+.card-font:hover{
+    color: black;
+    cursor: pointer;
+}

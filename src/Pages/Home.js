@@ -5,12 +5,14 @@ import Footer from '../Components/Footer'
 import Card from '../Components/Card'
 import Category from '../Components/Category'
 import Detail from '../Components/Detail'
+import CompareTable from '../Components/CompareTable'
 
 import { connect } from 'react-redux'
 import {
     getDataInsuranceAPI, 
     getSortInsuranceDataDateAPI,
-    getDataInsuranceDataAmountAPI
+    getDataInsuranceDataAmountAPI,
+    comparisonDataAPI
 } from '../Redux/Action'
 
 import '../Styles/content.css'
@@ -28,20 +30,27 @@ class Home extends Component {
             sortStatus: false,
             sortData: [],
             sortAmountStatus: false,
-            sortAmountData: []
+            sortAmountData: [],
+            checkBoxDatas: [],
+            newCheckBoxDatas: [],
+            availableToCompare: false
         }
     }
 
     componentDidMount(){
         this.props.fetchInsuranceData()
-        this.setState({listDataInsurane: this.props.insuranceDatas})
+        this.setState({
+            listDataInsurane: this.props.insuranceDatas,
+            checkBoxDatas: this.props.checkBoxDatas
+        })
     }
 
     componentWillReceiveProps(nextProps){
         console.log('nextProps: ', nextProps)
-        if(nextProps.hasOwnProperty('insuranceDatas')){
-            this.setState({listDataInsurane: nextProps.insuranceDatas})
-        }
+        this.setState({
+            listDataInsurane: nextProps.insuranceDatas,
+            checkBoxDatas: nextProps.checkBoxDatas
+        })
     }
     getDetailById = async(e) => {
         console.log('masuk getDetailById ===> Home', e)
@@ -80,9 +89,25 @@ class Home extends Component {
             })
         }
     }
+    getCheckDataFromCard = async(e) => {
+        console.log('anu card: ', e)
+        console.log('kkkk: ', this.props.checkBoxDatas)
+        let data = this.props.checkBoxDatas
+        await this.setState({newCheckBoxDatas: this.props.checkBoxDatas})
+        console.log(data.length)
+        if(data.length === 3){
+            this.props.fetchComparisonDataAPI(this.props.checkBoxDatas)
+            await this.setState({availableToCompare: true})
+        }else{
+            await this.setState({availableToCompare: false})
+        }
+    }
+
+    backFromCompare = (e) => {
+        console.log('masuk sini coy')
+        this.setState({availableToCompare: e})
+    }
     render(){
-        console.log('props: ', this.props)
-        console.log('state HOME: ', this.state) 
         let oldData
         let searchFilter
         if(this.state.search !== ''){
@@ -103,6 +128,8 @@ class Home extends Component {
             oldData = this.state.listDataInsurane
         }
         console.log('searchFilter: ', searchFilter)
+        console.log('newCheckBoxDatas: ', this.state.newCheckBoxDatas)
+        
         return(
             <div>
                 <div className='Header row'>
@@ -120,22 +147,28 @@ class Home extends Component {
                             </div>
                             <div className='col-md-9'>
                                 {
-                                    this.state.getDetailByIdStatus ?
-                                    <div>
-                                        <div className='row'>
-                                            <Detail
-                                                dataDetail={this.state.getDetailById}
-                                            />
-                                        </div>
-                                        <div className='row'>
-                                            <button type="button" className="btn btn-danger" onClick={this.getBackDetail}>Back</button>
-                                        </div>
-                                    </div>
+                                    this.state.availableToCompare ? 
+                                    <CompareTable backButton={this.backFromCompare}/>
                                     :
-                                    <Card 
-                                        data={oldData}
-                                        getDetailById={this.getDetailById}
-                                    />
+                                    (
+                                        this.state.getDetailByIdStatus ?
+                                        <div>
+                                            <div className='row'>
+                                                <Detail
+                                                    dataDetail={this.state.getDetailById}
+                                                />
+                                            </div>
+                                            <div className='row'>
+                                                <button type="button" className="btn btn-danger" onClick={this.getBackDetail}>Back</button>
+                                            </div>
+                                        </div>
+                                        :
+                                        <Card 
+                                            data={oldData}
+                                            getDetailById={this.getDetailById}
+                                            getCheckBoxSelected={this.getCheckDataFromCard}                                          
+                                        />
+                                    )
                                 }
                             </div>
                         </div>
@@ -158,7 +191,9 @@ const mapStateToProps = (state) => {
         clientError: state.insurances.error_status,
         serverError: state.insurances.error_status,
         sortDate: state.insurances.sortDateData,
-        sortAmount: state.insurances.sortAmountData
+        sortAmount: state.insurances.sortAmountData,
+        arrData: state.insurances.arr,
+        checkBoxDatas: state.insurances.arr
     }
 }
 
@@ -167,7 +202,8 @@ const mapDispatchToProps = (dispatch) => {
     return {
         fetchInsuranceData: () => dispatch(getDataInsuranceAPI()),
         fetchInsuranceSortDate: () => dispatch(getSortInsuranceDataDateAPI()),
-        fetchInsuranceSortAmount: () => dispatch(getDataInsuranceDataAmountAPI())
+        fetchInsuranceSortAmount: () => dispatch(getDataInsuranceDataAmountAPI()),
+        fetchComparisonDataAPI: (data) => dispatch(comparisonDataAPI(data))
     }
 }
 

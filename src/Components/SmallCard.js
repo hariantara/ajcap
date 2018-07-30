@@ -1,6 +1,7 @@
 import React, {Component} from 'react'
 
 import moment from 'moment'
+import {Input, FormGroup} from 'reactstrap'
 
 class SmallCard extends Component {
     constructor(props){
@@ -12,6 +13,8 @@ class SmallCard extends Component {
             sumInsured: '',
             premium: '',
             date: '',
+            index: '',
+            selectData: []
         }
     }
 
@@ -23,7 +26,10 @@ class SmallCard extends Component {
             sumInsured: nextProps.sumInsured,
             premium: nextProps.premium,
             date: nextProps.date,
+            index: nextProps.index,
+            selectData: nextProps.selectData
         })
+        this.props.listCheckedData(nextProps.selectData)
     }
 
     componentDidMount(){
@@ -34,11 +40,20 @@ class SmallCard extends Component {
             sumInsured: this.props.sumInsured,
             premium: this.props.premium,
             date: this.props.date,
+            index: this.props.index,
+            selectData: this.props.selectData
         })
+        this.props.listCheckedData(this.props.selectData)
+    }
+
+    getDataId = (e) => {
+        console.log('smal card eee: ', e)
+        this.props.funcGetId(e)
     }
 
     render(){
         // console.log('SMALL CARD: ', this.props)
+        // console.log('SAL: ', this.props.index)
         return(
             <div>
                 <div className='Card'>
@@ -48,8 +63,22 @@ class SmallCard extends Component {
                             <div className='col-md-12'>
                                 <div className="card-body">
                                     <div className='row'>
-                                        <div className='col-md-12'>
-                                            <h5 className="card-title card-font">{this.state.insuranceProviderName}</h5>
+                                        <div className='col-md-10'>
+                                            <div className='row'>
+                                                <div className='col-md-12'>
+                                                    <h5 className="card-title card-font" onClick={(e)=>this.getDataId(this.props.getId)}>{this.state.insuranceProviderName}</h5>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div className='col-md-1'>
+                                            <FormGroup check>
+                                                <Input 
+                                                    id={this.state.index}
+                                                    type="checkbox" 
+                                                    checked={this.props.checked[this.state.index]}
+                                                    onChange={(e, id)=>this.props.checking(e, this.props.getId)}
+                                                />
+                                            </FormGroup>
                                         </div>
                                         <div className='col-md-12'>
                                             <p className="card-title">{this.state.planName}</p>

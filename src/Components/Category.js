@@ -3,12 +3,9 @@ import React, {Component} from 'react'
 import '../Styles/searchButton.css'
 
 class Category extends Component {
-    constructor(props){
-        super(props)
-    }
 
     render(){
-        console.log('ini props bro: ', this.props)
+        // console.log('ini props bro: ', this.props)
         return(
             <div className='Category'>
                 <div className='search'>

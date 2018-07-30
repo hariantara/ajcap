@@ -7,7 +7,11 @@ import RelianceGeneral from '../Static/img/RelianceGeneral.png'
 import Religare from '../Static/img/Religare.png'
 
 import { connect } from 'react-redux'
-import {getDataInsuranceAPI, getDetailDataByIdAPI} from '../Redux/Action'
+import {
+    getDataInsuranceAPI, 
+    getDetailDataByIdAPI, 
+    itemsCheckBoxAPI,
+} from '../Redux/Action'
 
 import SmallCard from './SmallCard'
 
@@ -16,15 +20,25 @@ class Card extends Component {
         super(props)
         this.state = {
             listDataInsurance: [],
+            arrIndex: [],
+            arrItem: [],
+            checkedStatus: false,
         }
     }
 
     componentDidMount(){
-        this.setState({listDataInsurance: this.props.data})
+        this.setState({
+            listDataInsurance: this.props.data,
+            arrItem: this.props.checkBoxDatas
+        })
     }
 
     componentWillReceiveProps(nextProps){
-        this.setState({listDataInsurance: nextProps.data})
+        console.log('nextPROPS CARD', nextProps)
+        this.setState({
+            listDataInsurance: nextProps.data,
+            arrItem: nextProps.checkBoxDatas
+        })
     }
 
     // doing filter by id and get its detail per id
@@ -39,15 +53,31 @@ class Card extends Component {
         this.setState({detailById: ''})
     }
 
+    checkBox = (e, id) => {
+        console.log('i: ', e.target.id)
+        console.log('id: ', id)
+        this.setState({checkedStatus: !this.state.checkedStatus})
+        if(e.target.checked){
+            this.props.fetchItemsCheckBoxAPI(id)
+        }else{
+            const index = this.props.arrData.findIndex(item => item === id)
+            this.props.arrData.splice(index, 1)
+        }
+        
+    }
+
     render(){
-        console.log('props Card: ', this.props)
+        // onClick={(e)=> this.getId(data.plan.id)}
+        // console.log('props Card: ', this.props)
+        // console.log('state di CARD: ', this.state)
+        console.log('props in CARD: ', this.props)
         return(
             <div className='row'>
                 
                 {
                     this.state.listDataInsurance.map((data, i)=>{
                         return (
-                            <div key={i} className='col-md-4 card-box' onClick={(e)=> this.getId(data.plan.id)}>
+                            <div key={i} className='col-md-4 card-box'>
                                 {
                                     data.insuranceProviderId === 'HDFC_ERGO' ? 
                                         <SmallCard
@@ -57,6 +87,13 @@ class Card extends Component {
                                             sumInsured={data.sumInsured}
                                             premium={data.totalAmount.amount}
                                             date={data.plan.createdAt}
+                                            getId={data.plan.id}
+                                            funcGetId={this.getId}
+                                            index={i}
+                                            checking={this.checkBox}
+                                            checked={this.state.checkedStatus}
+                                            listCheckedData={this.props.getCheckBoxSelected}
+                                            selectedData={this.props.checkBoxDatas}
                                         />
                                     :
                                     data.insuranceProviderId === 'RELIGARE_HEALTH' ?
@@ -67,6 +104,13 @@ class Card extends Component {
                                             sumInsured={data.sumInsured}
                                             premium={data.totalAmount.amount}
                                             date={data.plan.createdAt}
+                                            getId={data.plan.id}
+                                            funcGetId={this.getId}
+                                            index={i}
+                                            checking={this.checkBox}
+                                            checked={this.state.checkedStatus}
+                                            listCheckedData={this.props.getCheckBoxSelected}
+                                            selectedData={this.props.checkBoxDatas}
                                         />
                                     :
                                         <SmallCard
@@ -76,6 +120,13 @@ class Card extends Component {
                                             sumInsured={data.sumInsured}
                                             premium={data.totalAmount.amount}
                                             date={data.plan.createdAt}
+                                            getId={data.plan.id}
+                                            funcGetId={this.getId}
+                                            index={i}
+                                            checking={this.checkBox}
+                                            checked={this.state.checkedStatus}
+                                            listCheckedData={this.props.getCheckBoxSelected}
+                                            selectedData={this.props.checkBoxDatas}
                                         />
                                 }
                             </div>
@@ -95,7 +146,9 @@ const mapStateToProps = (state) => {
         insuranceDatas: state.insurances.datas,
         getDetailInsurance: state.insurances.detail,
         clientError: state.insurances.error_status,
-        serverError: state.insurances.error_status
+        serverError: state.insurances.error_status,
+        arrData: state.insurances.arr,
+        checkBoxDatas: state.insurances.checkBoxDatas
     }
 }
 
@@ -103,7 +156,8 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = (dispatch) => {
     return {
         fetchInsuranceData: () => dispatch(getDataInsuranceAPI()),
-        fetchDetailInsurance: (id) => dispatch(getDetailDataByIdAPI(id))
+        fetchDetailInsurance: (id) => dispatch(getDetailDataByIdAPI(id)),
+        fetchItemsCheckBoxAPI: (data) => dispatch(itemsCheckBoxAPI(data)),
     }
 }
 
