@@ -1,4 +1,4 @@
-import React, {Component} from 'react'
+import React, {PureComponent} from 'react'
 
 import Navbar from  '../Components/Navbar'
 import Footer from '../Components/Footer'
@@ -17,7 +17,7 @@ import {
 
 import '../Styles/content.css'
 
-class Home extends Component {
+class Home extends PureComponent {
     constructor(props){
         super(props)
         this.state = {
@@ -110,23 +110,27 @@ class Home extends Component {
     render(){
         let oldData
         let searchFilter
-        if(this.state.search !== ''){
-            searchFilter = this.state.listDataInsurane.filter(
-                (data) => {
-                  return data.plan.insuranceProviderName.toLowerCase().indexOf(this.state.search.toLowerCase()) !== -1   
-                }
-            )
-            oldData = searchFilter
-        }
-        else if(this.state.sortStatus) {
+        if(this.state.sortStatus) {
             oldData = this.state.sortData
         }
         else if(this.state.sortAmountStatus){
             oldData = this.state.sortAmountData
         }
+        else if(this.state.availableToCompare){
+            oldData = this.state.listDataInsurane
+        }
+        else if(this.state.search !== ''){
+            let filterData = this.state.listDataInsurane.filter(
+                (data) => {
+                  return data.plan.insuranceProviderName.toLowerCase().indexOf(this.state.search.toLowerCase()) != -1 
+                }
+              )
+              oldData = filterData
+        }
         else {
             oldData = this.state.listDataInsurane
         }
+        console.log('oldData', oldData )
         console.log('searchFilter: ', searchFilter)
         console.log('newCheckBoxDatas: ', this.state.newCheckBoxDatas)
         
@@ -188,6 +192,7 @@ const mapStateToProps = (state) => {
     console.log('state: ', state)
     return {
         insuranceDatas: state.insurances.datas,
+        listDataInsurance: state.insurances.listDatas,
         clientError: state.insurances.error_status,
         serverError: state.insurances.error_status,
         sortDate: state.insurances.sortDateData,

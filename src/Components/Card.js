@@ -1,4 +1,4 @@
-import React, {Component} from 'react'
+import React, {PureComponent} from 'react'
 
 import '../Styles/card.css'
 
@@ -15,7 +15,7 @@ import {
 
 import SmallCard from './SmallCard'
 
-class Card extends Component {
+class Card extends PureComponent {
     constructor(props){
         super(props)
         this.state = {
@@ -34,7 +34,7 @@ class Card extends Component {
     }
 
     componentWillReceiveProps(nextProps){
-        console.log('nextPROPS CARD', nextProps)
+        // console.log('nextPROPS CARD', nextProps)
         this.setState({
             listDataInsurance: nextProps.data,
             arrItem: nextProps.checkBoxDatas
@@ -143,7 +143,7 @@ class Card extends Component {
 const mapStateToProps = (state) => {
     console.log('state: ', state)
     return {
-        insuranceDatas: state.insurances.datas,
+        //insuranceDatas: state.insurances.datas,
         getDetailInsurance: state.insurances.detail,
         clientError: state.insurances.error_status,
         serverError: state.insurances.error_status,

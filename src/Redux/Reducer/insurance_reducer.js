@@ -1,6 +1,7 @@
 const defaultState = {
     data: {},
     datas: [],
+    listDatas: [],
     error_status: '',
     detail: {},
     sortDateData: [],
@@ -13,7 +14,7 @@ const defaultState = {
 const insurancesReducer = (state=defaultState, action) => {
     switch (action.type) {
         case 'GET_LIST_DATA': 
-            return {...state, datas: action.payload.listInsurances}
+            return {...state, datas: action.payload.listInsurances, listDatas: action.payload.listInsurances}
         case 'GET_BY_ID': 
             return {...state, detail: action.payload.detail}
         case 'GET_SORT_DATE': 
