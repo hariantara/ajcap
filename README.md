@@ -1,5 +1,5 @@
 # ajcap
-AJ Capital Test
+AJ Capital 
 
 
 step to run the apps:  
